@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+service Analyzer {
+	rpc ScoreImage(Request) returns (Response) {}
+}
+
+message Request {
+	string url = 1;
+}
+
+message Response {
+	string brand = 1;
+	float probability = 2;
+}
+

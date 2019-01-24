@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"github.com/dghubble/sling"
 	"log"
 	"net/http"
@@ -29,7 +30,7 @@ func (m *ModelApi) ScoreImage(url string) (*GetScoreResponse, error) {
 
 	if res.StatusCode != 200 {
 		log.Print("Error: Status Code: ", res.StatusCode)
-		return nil, errors.New("Error in call to model")
+		return nil, errors.New(fmt.Sprintf("model-service returned status code: %d ", res.StatusCode))
 	}
 
 	return scoreResponse, nil

@@ -20,7 +20,7 @@ func main() {
 
 	r := gin.Default()
 
-	r.POST("/recognizer/training-image", trainImage)
+	r.POST("/recognizer/trainer-image", trainImage)
 	r.GET("/recognizer/identification", identifyImage)
 
 	err := r.Run("0.0.0.0:" + config.Port)
