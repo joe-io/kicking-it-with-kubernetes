@@ -1,6 +1,6 @@
 # Kicking it with Kubernetes
 
-In this Mini Summit / Lab we will be building multiple Microservices using Golang and deploy them to Kubernetes.
+In this lab we will be building multiple Microservices using Golang and deploy them to Kubernetes.
 
 To successfully complete this lab you should have the following installed on your machine:
 1. Docker  (https://www.docker.com/get-started)
@@ -8,10 +8,10 @@ To successfully complete this lab you should have the following installed on you
 
 We will work through the following mini-tutorials in this Lab.
 
-1. [Hello, world! - Intro to Golang](1-helloworld)
-2. [Hello, web! - Build your first REST API with Golang](2-helloweb)
-3. [Hello, gRPC! - Build your first gRPC API with Golang](3-hellogrpc)
-4. [Hello, ML! - Leverage a Tensorflow ML model in Golang](4-helloml)
+1. [Hello, world! - Intro to Golang](1-helloworld/README.md)
+2. [Hello, web! - Build your first REST API with Golang](2-helloweb/README.md)
+3. [Hello, gRPC! - Build your first gRPC API with Golang](3-hellogrpc/README.md)
+4. [Hello, ML! - Leverage a Tensorflow ML model in Golang](4-helloml/README.md)
 
 We will be working through the lab material together, but you can feel free to work ahead if are already familiar with a topic.
 
