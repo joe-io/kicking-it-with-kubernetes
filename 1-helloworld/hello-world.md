@@ -25,7 +25,7 @@ You should see the following output:
 
 Let's talk about what just happened.
 
-Every go source file has to belong to a specific package.  If we are making an executable package (as opposed to a library), that package should be called 'main'.
+Every go source file belong to a specific package.  If we are making an executable (as opposed to a library), that package should be called 'main'.
 
 The package declaration should always be the first line in the file.
 
@@ -33,7 +33,7 @@ Executable packages should contain a function named main.  This is the entry-poi
 
 Let's make this a bit more interesting.
 
-Let's update the code to allow us to ask a name and use it in our greeting.
+Let's update the code to ask for a name and use it in our greeting.
 
 ```go
 package main
@@ -54,9 +54,9 @@ Let's run our program again:
 Now we should be prompted to enter a name, after which we expect to see something like this:
 > Hello, Joe!
 
-Let's talk about one strange thing we saw, *&name* in the call to fmt.Scanln.  In go, this means take a reference to a variable.
+Let's talk about one strange thing we saw, *&name* in the call to fmt.Scanln.  In Go, the *&* is an address operator that generates a pointer.
 
-The go language supports pointers and references.  We'll get more into that later.
+For now, just know that Go supports pointers, but not pointer arithmetic.  We'll get more into that later.
 
 Let's add one more feature.  Let's allow the user to pass in the name as a command line argument.
 

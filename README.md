@@ -12,6 +12,8 @@ We will work through the following mini-tutorials in this Lab.
 2. [Hello, web! - Build your first REST API with Golang](2-helloweb/README.md)
 3. [Hello, gRPC! - Build your first gRPC API with Golang](3-hellogrpc/README.md)
 4. [Hello, ML! - Leverage a Tensorflow ML model in Golang](4-helloml/README.md)
+5. [Hello, Kubernetes - Deploy and configure services with K8s](5-hellok8s/README.md)
+6. [Hello, Skaffold - Greasing the wheels of K8s development](6-helloskaffold/README.md)
 
 We will be working through the lab material together, but you can feel free to work ahead if are already familiar with a topic.
 
