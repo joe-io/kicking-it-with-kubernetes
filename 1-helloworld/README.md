@@ -2,9 +2,9 @@
 
 ## Overview
 
-The go programming language is well known for it's simplicity, speed, and novel approach to handling concurrency.
+The Go programming language is well known for it's simplicity, speed, and novel approach to handling concurrency.
 
-In this lab we will walk through some of the key language features that make go unique and give you hands on experience working with them.
+In this lab we will walk through some of the key language features that make Go unique and give you hands on experience working with them.
 
 This lab is divided into 10 sections, each one covering a different area of the language.
 
