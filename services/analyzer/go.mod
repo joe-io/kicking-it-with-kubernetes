@@ -1,4 +1,4 @@
-module github.com/joe-io/kicking-it-with-kubernetes/model
+module github.com/joe-io/kicking-it-with-kubernetes/analyzer
 
 require (
 	github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7 // indirect

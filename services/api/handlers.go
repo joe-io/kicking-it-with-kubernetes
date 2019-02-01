@@ -16,7 +16,7 @@ const (
 	UnRecognized IdentificationResult = "unrecognized"
 )
 
-// Placeholder for calling a service that will use the image to train the model for a specific brand
+// Placeholder for calling a service that will use the image to train the analyzer for a specific brand
 func trainImage(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "ingested",

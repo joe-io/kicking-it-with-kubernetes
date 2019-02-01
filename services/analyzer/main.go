@@ -30,7 +30,7 @@ func main() {
 
 func loadConfig() *Config {
 	var config Config
-	err := envconfig.Process("model", &config)
+	err := envconfig.Process("analyzer", &config)
 	if err != nil {
 		log.Fatal(err)
 	}

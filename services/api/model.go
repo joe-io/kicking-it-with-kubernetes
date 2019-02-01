@@ -30,7 +30,7 @@ func (m *ModelApi) ScoreImage(url string) (*GetScoreResponse, error) {
 
 	if res.StatusCode != 200 {
 		log.Print("Error: Status Code: ", res.StatusCode)
-		return nil, errors.New(fmt.Sprintf("model-service returned status code: %d ", res.StatusCode))
+		return nil, errors.New(fmt.Sprintf("analyzer-service returned status code: %d ", res.StatusCode))
 	}
 
 	return scoreResponse, nil
