@@ -86,7 +86,7 @@ spec:
 
 Run the following command to deploy your app to k8s.
 ```sh
-kubectl create -f deployment.yaml
+kubectl apply -f deployment.yaml
 ```
 
 To see if the deployment was successful run
@@ -117,6 +117,21 @@ kubectl apply -f deployment.yaml
 This will update the configuration in k8s. K8s will then adjust your deployment to match the new configuration.
 
 # Write service configuration
+Your applications are now running in k8s. Each container is exposed with its own IP address on the ports you have specified. There are garuntees on how many containers will stay running, but there are no garuntees that the IP address will stay the same if something restarts. To build out a garuntee you will create a service policy. This will give your containers a virtual name and IP address that can always be used to access whichever pods are available. The set of pods targeted by a service should be replicas of the same container. To implement a k8s service, create a file called service.yaml in the api directory. Add the following configuration to the file.
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-service
+spec:
+  ports:
+  - port: 80
+    targetPort: 8082
+    protocol: TCP
+    name: frontend-api
+  selector:
+    app: api-pod
+```
 
 # Write ingress configuration
 
