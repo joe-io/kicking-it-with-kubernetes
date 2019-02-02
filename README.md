@@ -8,7 +8,7 @@ To successfully complete this lab you should have the following installed on you
 
 We will work through the following mini-tutorials in this Lab.
 
-1. [Hello, world! - Intro to Golang](1-helloworld/README.md)
+1. [Hello, world! - Intro to Golang](1-helloworld)
 2. [Hello, web! - Build your first REST API with Golang](2-helloweb/README.md)
 3. [Hello, gRPC! - Build your first gRPC API with Golang](3-hellogrpc/README.md)
 4. [Hello, ML! - Leverage a Tensorflow ML model in Golang](4-helloml/README.md)
