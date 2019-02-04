@@ -15,7 +15,7 @@ func main() {
 
 	r := gin.Default()
 
-	r.GET("/score-image", func(c *gin.Context) {
+	r.GET("/brand-score", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"brand":       "Apple",
 			"probability": 0.925,

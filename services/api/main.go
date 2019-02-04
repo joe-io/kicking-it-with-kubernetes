@@ -14,7 +14,7 @@ type Config struct {
 
 var modelApi *ModelApi
 
-func main() {
+func _main() {
 	config := loadConfig()
 	modelApi = NewModelApi(config.ModelEndpoint, &http.Client{})
 
