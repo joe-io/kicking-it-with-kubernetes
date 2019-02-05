@@ -49,7 +49,7 @@ This will run a container locally on your machine. You should see output similar
 
 If you hit http://localhost:8082/recognizer/identification from a browser you will get a 500 error, but you should see a new log line reporting the error. This means that your service is up and running.
 
-The next exercise is to take what you learned here and create a Dockerfile for the `model` service.
+The next exercise is to take what you learned here and create a Dockerfile for the `analyzer` service.
 
 # Write deployment configuration
 You should now have **2 Dockerfiles** that create a valid image that can be run locally. If you do not have both Docker files go back to the last exercise and create them now.
@@ -79,8 +79,8 @@ spec:
         ports:
         - containerPort: 8082          # This container port will be exposed
         env:
-        - name: API_MODEL_ENDPOINT     # This key/value pair will be available in the containers environment
-          value: http://model-service/
+        - name: API_ANALYZER_ENDPOINT     # This key/value pair will be available in the containers environment
+          value: http://analyzer-service:8080/
 
 ```
 
@@ -108,7 +108,7 @@ replicaset.apps/api-deployment-57449d868c   2         2         2       41s
 ```
 This shows the deployment config, the replica set config, and the 2 pods. These are all of the things requested in the deployment.yaml configuration.
 
-Take a few minutes and build out a deployment.yaml file the `model` app and then deploy it to k8s.
+Take a few minutes and build out a deployment.yaml file the `analyzer` app and then deploy it to k8s.
 
 If you make any mistakes you can just fix the deployment.yaml file and run
 ```sh
@@ -119,19 +119,79 @@ This will update the configuration in k8s. K8s will then adjust your deployment 
 # Write service configuration
 Your applications are now running in k8s. Each container is exposed with its own IP address on the ports you have specified. There are garuntees on how many containers will stay running, but there are no garuntees that the IP address will stay the same if something restarts. To build out a garuntee you will create a service policy. This will give your containers a virtual name and IP address that can always be used to access whichever pods are available. The set of pods targeted by a service should be replicas of the same container. To implement a k8s service, create a file called service.yaml in the api directory. Add the following configuration to the file.
 ```yaml
-apiVersion: v1
-kind: Service
+apiVersion: v1            # The version of the k8s api
+kind: Service             # Specify what we are configuring
 metadata:
-  name: api-service
+  name: api-service       # The name of this service
 spec:
   ports:
-  - port: 80
-    targetPort: 8082
+  - port: 80              # This is the port the service will expose
+    targetPort: 8082      # This is the port the container exposes
     protocol: TCP
-    name: frontend-api
+    name: http
   selector:
-    app: api-pod
+    app: api-pod          # This service will front pods that match the selector `app: api-pod`
 ```
 
-# Write ingress configuration
+To deploy this configuration run the following.
 
+```sh
+kubectl apply -f service.yaml
+```
+
+Your service is now configured. To see the service run:
+```sh
+kubectl get services
+```
+
+This should return something like the following.
+```
+NAME            TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+api-service     ClusterIP   10.104.154.176   <none>        80/TCP         2d
+kubernetes      ClusterIP   10.96.0.1        <none>        443/TCP        81d
+```
+
+Notice the `PORT` definition for the `api-service`. The service is now available on port 80, but it is only available inside the cluster. This is great because in a microservice world most microservices are not customer facing. All microservices can communicate with each other as though they were public, but they have the security of only being available on the cluster. 
+
+Notice also the `NAME` and `CLUSTER-IP` values for your services. The `NAME` value can be thought of as a hostname or cname for the service. The `NAME` value will resolve to the `CLUSTER-IP` address. Remember in the api deployment that we set the environment variable `API_ANALYZER_ENDPOINT` to `http://analyzer-service:8080/`? This was so the api would know where the analyzer microservice could be found. If the pods restart and move to different IP address there will be no need to make a configuration change. The service will maintain a static name and address. 
+
+Now create a second `service.yaml` file in the analyzer directory for that service. Expose port 8080 to the cluster for this service and give it the name `analyzer-service`.
+
+# Write ingress configuration
+Generally whatever cluster you are using will have a couple of ingress controllers configured for you, f.e. AKS uses ALBs and Ethos uses Contour. In our case the local docker instance of k8s does not have an ingress controller configured. Our first step will be to install and nginx ingress controller. (If you are using a production grade cluster you will not need this step.)
+
+```sh
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/mandatory.yaml
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/provider/cloud-generic.yaml
+```
+
+The good people who wrote the ingress-nginx controller also supplied the config needed to install it locally. Running the above two commands installed and configured k8s for ingress. If you run `kubectl get all --namespace ingress-nginx` you will see that the above commands configured a Pod, a Deployment, a ReplicaSet, and a Service in it's own namespace. This started an nginx container and configured k8s to accept external requests (from localhost).
+
+Now that an ingress contrller is in place, we can tie the ingress service and our api service together allowing our internal api service to accept requests from external clients. 
+
+Create a new file in the api directory called `ingress.yaml` and add the following configuration to it.
+
+```yaml
+apiVersion: extensions/v1beta1         # The version of the k8s api
+kind: Ingress                          # Specify what we are configuring
+metadata:
+  name: api-ingress                    # The name of this ingress object
+spec:
+  rules:
+  - host: localhost                    # The HOST header value used for routing
+    http:
+      paths:
+      - path: /                        # The PATH header value to match for routing
+        backend:
+          serviceName: api-service     # The name of the service to route to
+          servicePort: 80              # The port of the service to route to
+```
+
+Send the above configuration to the k8s cluster in the usual way.
+
+```sh
+kubectl apply -f ingress.yaml
+```
+
+At this point you should be able to hit your service from your browser at `http://localhost/recognizer/identification?url=%E2%80%9Csomefakeurl.jpeg`
