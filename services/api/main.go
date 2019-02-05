@@ -12,11 +12,11 @@ type Config struct {
 	Port          string `default:"8082"`
 }
 
-var modelApi *ModelApi
+var analyzerApi *AnalyzerApi
 
 func _main() {
 	config := loadConfig()
-	modelApi = NewModelApi(config.ModelEndpoint, &http.Client{})
+	analyzerApi = NewAnalyzerApi(config.ModelEndpoint, &http.Client{})
 
 	r := gin.Default()
 

@@ -8,21 +8,21 @@ import (
 	"net/http"
 )
 
-type ModelApi struct {
+type AnalyzerApi struct {
 	sling *sling.Sling
 }
 
-func NewModelApi(baseUrl string, client *http.Client) *ModelApi {
-	return &ModelApi{
+func NewAnalyzerApi(baseUrl string, client *http.Client) *AnalyzerApi {
+	return &AnalyzerApi{
 		sling: sling.New().Client(client).Base(baseUrl),
 	}
 }
 
-func (m *ModelApi) ScoreImage(url string) (*GetScoreResponse, error) {
+func (a *AnalyzerApi) ScoreImage(url string) (*GetScoreResponse, error) {
 	req := &GetScoreRequest{Url: url}
 	scoreResponse := &GetScoreResponse{}
 
-	res, err := m.sling.New().Get("/score-image").QueryStruct(req).ReceiveSuccess(scoreResponse)
+	res, err := a.sling.New().Get("/brand-score").QueryStruct(req).ReceiveSuccess(scoreResponse)
 
 	if err != nil {
 		return nil, err

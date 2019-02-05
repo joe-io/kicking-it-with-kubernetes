@@ -370,5 +370,141 @@ First let's start the *analyzer* service.
 
 Let's double check our service is running, open this URL in your browser: http://localhost:8088/brand-score
 
+Great, now lets add a call to the *analyzer* from the *api* service.
 
+We will be using a *Sling*, a Go HTTP client library specifically designed for making API requests.
+
+https://github.com/dghubble/sling
+
+We can use sling directly, but it our example, let's wrap it in a class that will make the *analyzer* client more reusable.
+
+Let's create a file called analyzer.go in the services/api directory.
+
+Let's first add a *struct* and a constructor for AnalyzerApi:
+
+```go
+package main
+
+import (
+	"errors"
+	"fmt"
+	"github.com/dghubble/sling"
+	"log"
+	"net/http"
+)
+
+type AnalyzerApi struct {
+	sling *sling.Sling
+}
+
+func NewAnalyzerApi(baseUrl string, client *http.Client) *AnalyzerApi {
+	return &AnalyzerApi{
+		sling: sling.New().Client(client).Base(baseUrl),
+	}
+}
+```
+
+In Go, constructors are simply functions - typically named New[Type] by convention.
+
+In this case, we use the parameters to initialize the default instance of sling for this API.
+
+Now let's add in the call to the "brand-score" endpoint:
+```go
+func (a *AnalyzerApi) ScoreImage(url string) (*GetScoreResponse, error) {
+	req := &GetScoreRequest{Url: url}
+	scoreResponse := &GetScoreResponse{}
+
+	res, err := a.sling.New().Get("/brand-score").QueryStruct(req).ReceiveSuccess(scoreResponse)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if res.StatusCode != 200 {
+		log.Print("Error: Status Code: ", res.StatusCode)
+		return nil, errors.New(fmt.Sprintf("analyzer-service returned status code: %d ", res.StatusCode))
+	}
+
+	return scoreResponse, nil
+}
+```
+
+The line that does the actual work is here:
+```go
+a.sling.New().Get("/brand-score").QueryStruct(req).ReceiveSuccess(scoreResponse)
+```
+
+The rest of the function is error handling and formatting.
+
+
+Lastly, we will define the input and response types for the call (you can add them to the end of the file):
+```go
+type GetScoreRequest struct {
+	Url string `json:"url"`
+}
+
+type GetScoreResponse struct {
+	Brand       string  `json:"brand"`
+	Probability float32 `json:"probability"`
+}
+```
+
+If you look carefully at each of the *structs* we have defined, you will notice something new in the field declarations.
+
+In Go, each field can be followed by a string and by convention, the string typically contains name:"value" pairs that can contain metadata bout the field.
+
+These are often used to define thing like how to map *struct* field names to JSON, as we see here.
+
+Lastly, we need to update *handlers.go* to use our new AnalyizerAPI client:
+```go
+package main
+
+import (
+	"github.com/gin-gonic/gin"
+	"log"
+)
+
+const (
+	defaultTrustThreshold = 0.80
+)
+
+type IdentificationResult string
+
+const (
+	Recognized   IdentificationResult = "recognized"
+	UnRecognized IdentificationResult = "unrecognized"
+)
+
+// Placeholder for calling a service that will use the image to train the analyzer for a specific brand
+func trainImage(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"message": "ingested",
+	})
+}
+
+// Identify the image the user passes in
+func identifyImage(c *gin.Context) {
+	url := c.Query("url")
+	res, err := analyzerApi.ScoreImage(url)
+
+	if err != nil {
+		log.Println("Error", err)
+		_ = c.AbortWithError(500, err)
+		return
+	}
+
+	if res.Probability > defaultTrustThreshold {
+		c.JSON(200, gin.H{
+			"result": Recognized,
+			"brand":  res.Brand,
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"result": UnRecognized,
+		})
+	}
+}
+``` 
+
+Again, there are a few new things to go over.  We are creating a const named *defaultTrustThreshold* and then defining the Go equivalent of an Enum type.
 

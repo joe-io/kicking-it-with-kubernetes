@@ -26,7 +26,7 @@ func trainImage(c *gin.Context) {
 // Identify the image the user passes in
 func identifyImage(c *gin.Context) {
 	url := c.Query("url")
-	res, err := modelApi.ScoreImage(url)
+	res, err := analyzerApi.ScoreImage(url)
 
 	if err != nil {
 		log.Println("Error", err)
