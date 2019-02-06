@@ -9,7 +9,7 @@ import (
 
 type Config struct {
 	ModelEndpoint string `default:"http://localhost:8088"`
-	Port          string `default:"8082"`
+	Port          string `envconfig:"PORT" default:"8082"`
 }
 
 var analyzerApi *AnalyzerApi
