@@ -2,28 +2,20 @@
 
 There are a lot of options for building webservices in Golang.  In fact, Go has a great HTTP library built-in.
 
-In this tutorial, we are going to be using one of the more popular Go frameworks for building REST APIs.
+In this tutorial, we are going to be using one of the more popular Go frameworks for building REST APIs called *Gin*, https://github.com/gin-gonic/gin
 
 We'll first explore a basic example, followed by a more in-depth use-case that includes two services that talk to each other.
 
 ## Creating a Basic Web Service
 
-The Go framework we will be using is called Gin: https://github.com/gin-gonic/gin
-
 Gin is a light-weight, high-performance web framework that focuses on simplicty, speed, and ease-of-use.
 
 Unfortunately, we won't have time to touch on most of the features that *Gin* provides, but here are some to be aware of:
 - Binding Query, Form or Post Data to Structs and performing Validation
+- Multipart/Urlencoded Form Handling, File Uploads, etc.
 - Grouping Routes
-- Path and Query Parameters
-- Multipart/Urlencoded Form Handling
-- File Uploads
-- Middleware
 - Easy rendering of XML, JSON, YAML, ProtoBuf, and JSONP
-- HTML Rendering
-- Static file serving
 - Graceful restart/stop
-- Cookies, Redirects, etc.
 - HTTP 2 server push
 
 Rather than going into too much detail up-front, let's just get going with code.
