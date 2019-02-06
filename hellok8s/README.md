@@ -120,7 +120,7 @@ kubectl apply -f deployment.yaml
 This will update the configuration in k8s. K8s will then adjust your deployment to match the new configuration.
 
 # Write service configuration
-Your applications are now running in k8s. Each container is exposed with its own IP address on the ports you have specified. There are garuntees on how many containers will stay running, but there are no garuntees that the IP address will stay the same if something restarts. To build out a garuntee you will create a service policy. This will give your containers a virtual name and IP address that can always be used to access whichever pods are available. The set of pods targeted by a service should be replicas of the same container. To implement a k8s service, create a file called service.yaml in the api directory. Add the following configuration to the file.
+Your applications are now running in k8s. Each container is exposed with its own IP address on the ports you have specified. There are guarantees on how many containers will stay running, but there are no guarantees that the IP address will stay the same if something restarts. To build out a guarantee you will create a service policy. This will give your containers a virtual name and IP address that can always be used to access whichever pods are available. The set of pods targeted by a service should be replicas of the same container. To implement a k8s service, create a file called service.yaml in the api directory. Add the following configuration to the file.
 ```yaml
 apiVersion: v1            # The version of the k8s api
 kind: Service             # Specify what we are configuring
@@ -171,7 +171,7 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/mast
 
 The good people who wrote the ingress-nginx controller also supplied the config needed to install it locally. Running the above two commands installed and configured k8s for ingress. If you run `kubectl get all --namespace ingress-nginx` you will see that the above commands configured a Pod, a Deployment, a ReplicaSet, and a Service in it's own namespace. This started an nginx container and configured k8s to accept external requests (from localhost).
 
-Now that an ingress contrller is in place, we can tie the ingress service and our api service together allowing our internal api service to accept requests from external clients. 
+Now that an ingress controller is in place, we can tie the ingress service and our api service together allowing our internal api service to accept requests from external clients. 
 
 Create a new file in the api directory called `ingress.yaml` and add the following configuration to it.
 
@@ -198,3 +198,6 @@ kubectl apply -f ingress.yaml
 ```
 
 At this point you should be able to hit your service from your browser at `http://localhost/recognizer/identification?url=%E2%80%9Csomefakeurl.jpeg`
+
+# Retrieving logs
+You can directly get log output from your containers to help you debug issues. The best practice for logging in a containerized environment is to log to standard out and let the orchestrator handle the logs for you. This is by default what is happening in our setup. If you run `kubectl get pods` and select the name of one of the pods and then run `kubectl logs -f <podname>` you will be able to follow the logs for the specified container. While debugging it is often convenient to decrease the number of running containers to one.
