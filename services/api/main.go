@@ -14,7 +14,7 @@ type Config struct {
 
 var analyzerApi *AnalyzerApi
 
-func _main() {
+func main() {
 	config := loadConfig()
 	analyzerApi = NewAnalyzerApi(config.ModelEndpoint, &http.Client{})
 
