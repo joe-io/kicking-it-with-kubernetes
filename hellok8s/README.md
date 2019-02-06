@@ -10,6 +10,7 @@ FROM golang:1.11-alpine as build
 RUN apk add --no-cache --update alpine-sdk git gcc
 COPY . /build
 WORKDIR /build
+RUN go get github.com/dghubble/sling github.com/gin-gonic/gin github.com/kelseyhightower/envconfig
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"'
 
 FROM scratch
@@ -30,13 +31,13 @@ The `CMD ["/api"]` statement is the command that will be run inside the containe
 We have a configuration file that defines what image we would like created. We need to have docker actually build the image now. Run the following from the `api` directory where the `Dockerfile` is.
 
 ```sh
-docker build -t myapi .
+docker build -t myapi:v1 .
 ```
 
 This command will create a docker image with the name `myapi`. To create a running container from the image, run the following.
 
 ```sh
-docker run -it -p 8082:8082 myapi
+docker run -it -p 8082:8082 myapi:v1
 ```
 
 This will run a container locally on your machine. You should see output similar to the following.
@@ -52,9 +53,9 @@ If you hit http://localhost:8082/recognizer/identification from a browser you wi
 The next exercise is to take what you learned here and create a Dockerfile for the `analyzer` service.
 
 # Write deployment configuration
-You should now have **2 Dockerfiles** that create a valid image that can be run locally. If you do not have both Docker files go back to the last exercise and create them now.
+You should now have **2 Dockerfiles** that create valid images that can be run locally. If you do not have both Docker files go back to the last exercise and create them now.
 
-The latest Docker installs allow you to enable k8s locally. Open the docker preferences and make sure that k8s is enabled. [[Mac Instructions]](https://docs.docker.com/docker-for-mac/#kubernetes) [[Windows Instructions]](https://docs.docker.com/docker-for-windows/#kubernetes)
+The latest Docker install allows you to enable k8s locally. Open the docker preferences and make sure that k8s is enabled. [[Mac Instructions]](https://docs.docker.com/docker-for-mac/#kubernetes) [[Windows Instructions]](https://docs.docker.com/docker-for-windows/#kubernetes)
 
 We will now define a k8s node and replica set in context of a deployment controller. Create a new file called deployment.yaml in the `api` directory and add the following configuration.
 
@@ -75,11 +76,13 @@ spec:
     spec:
       containers:
       - name: myapi                    # The name assigned to the container in the docker daemon
-        image: myapi:latest            # Using the 'latest' tag is a bad practice but easy for demos
+        image: myapi:v1                # Using the 'latest' tag is a bad practice but easy for demos
         ports:
         - containerPort: 8082          # This container port will be exposed
-        env:
-        - name: API_ANALYZER_ENDPOINT     # This key/value pair will be available in the containers environment
+        env:                           # These key/value pairs will be available in the containers environment
+        - name: PORT
+          value: 8082
+        - name: API_ANALYZER_ENDPOINT     
           value: http://analyzer-service:8080/
 
 ```
