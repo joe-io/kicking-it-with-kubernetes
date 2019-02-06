@@ -11,7 +11,7 @@ We will work through the following mini-tutorials in this Lab.
 1. [Hello, World! - Intro to Golang](helloworld)
 2. [Hello, Web! - REST APIs Using Golang](helloweb)
 3. [Building the Services](services)
-4. [Kubernetes FTW - Deploy and configure services with K8s](5-hellok8s/README.md)
+4. [Kubernetes FTW - Deploy and configure services with K8s](hellok8s/README.md)
 
 We will be working through the lab material together, but you can feel free to work ahead if are already familiar with a topic.
 
