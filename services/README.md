@@ -331,4 +331,47 @@ func identifyImage(c *gin.Context) {
 
 Again, there are a few new things to go over.  We are creating a const named *defaultTrustThreshold* and then defining the Go equivalent of an Enum type.
 
+Your *main.go* file should look like this:
+```go
+package main
+
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/kelseyhightower/envconfig"
+	"log"
+	"net/http"
+)
+
+type Config struct {
+	ModelEndpoint string `default:"http://localhost:8088"`
+	Port          string `default:"8082"`
+}
+
+var analyzerApi *AnalyzerApi
+
+func _main() {
+	config := loadConfig()
+	analyzerApi = NewAnalyzerApi(config.ModelEndpoint, &http.Client{})
+
+	r := gin.Default()
+
+	r.POST("/recognizer/trainer-image", trainImage)
+	r.GET("/recognizer/identification", identifyImage)
+
+	err := r.Run("0.0.0.0:" + config.Port)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func loadConfig() *Config {
+	var config Config
+	err := envconfig.Process("api", &config)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return &config
+}
+```
+
 Now that we have both services built and running, let's take a look at how we can deploy them to Kubernetes: [Kubernetes FTW - Deploy and configure services with K8s](../hellok8s/README.md)

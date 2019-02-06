@@ -20,7 +20,7 @@ Unfortunately, we won't have time to touch on most of the features that *Gin* pr
 
 Rather than going into too much detail up-front, let's just get going with code.
 
-Create a *main.go* file in this directory (1-helloweb) and copy in the following code:
+Create a *main.go* file in this directory (helloweb) and copy in the following code:
 
 ```go
 package main
@@ -71,11 +71,14 @@ This keeps us from having to stop the service, rebuild, and restart the service.
 
 There is a popular tool for live reloading Go programs called *gin* - to be clear, this is separate from the Gin Web Framework we are using.
 
-If you haven't already installed gin, run the following:
+If you haven't already installed gin, *open a new terminal window* and run the following:
 ```bash
+> cd ~
 > go get github.com/codegangsta/gin
 > gin -h
 ``` 
+ 
+If you don't see the help for *gin*, double check that you ran the *go get* command outside the application directory. 
  
 Now you can run it in any directory containing Go code and it will build and watch the code for changes.
 
