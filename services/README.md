@@ -344,12 +344,12 @@ import (
 
 type Config struct {
 	ModelEndpoint string `default:"http://localhost:8088"`
-	Port          string `default:"8082"`
+	Port          string `envconfig:"PORT" default:"8082"`
 }
 
 var analyzerApi *AnalyzerApi
 
-func _main() {
+func main() {
 	config := loadConfig()
 	analyzerApi = NewAnalyzerApi(config.ModelEndpoint, &http.Client{})
 
@@ -372,6 +372,7 @@ func loadConfig() *Config {
 	}
 	return &config
 }
+
 ```
 
 Now that we have both services built and running, let's take a look at how we can deploy them to Kubernetes: [Kubernetes FTW - Deploy and configure services with K8s](../hellok8s/README.md)
