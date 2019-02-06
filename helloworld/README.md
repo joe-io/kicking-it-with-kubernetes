@@ -573,3 +573,4 @@ func (user *User) checkFavoriteNumber() {
 Build and run the program by running the following in this directory:
 > go build && ./helloworld
 
+Now that you have a basic introduction to Golang, let's take a look at web-services in Golang: [Hello, Web! - REST APIs Using Golang](../helloweb)

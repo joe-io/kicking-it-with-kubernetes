@@ -8,12 +8,10 @@ To successfully complete this lab you should have the following installed on you
 
 We will work through the following mini-tutorials in this Lab.
 
-1. [Hello, world! - Intro to Golang](1-helloworld)
-2. [Go Webservices](2-helloweb/README.md)
-3. [Using gRPC](3-hellogrpc/README.md)
-4. [Adding Intelligence - Leverage a Tensorflow ML model in Golang](4-helloml/README.md)
-5. [Kubernetes FTW - Deploy and configure services with K8s](5-hellok8s/README.md)
-6. [Skaffold - Greasing the wheels of K8s development](6-helloskaffold/README.md)
+1. [Hello, World! - Intro to Golang](helloworld)
+2. [Hello, Web! - REST APIs Using Golang](helloweb)
+3. [Building the Services](services)
+4. [Kubernetes FTW - Deploy and configure services with K8s](5-hellok8s/README.md)
 
 We will be working through the lab material together, but you can feel free to work ahead if are already familiar with a topic.
 
