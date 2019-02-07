@@ -117,7 +117,7 @@ Response:
 
 First, we'll get a basic service running and returning a hard-coded result.
 
-Copy the following to the empty *main.go* file in services/api:
+Create a *main.go* file in services/api:
 ```go
 package main
 
