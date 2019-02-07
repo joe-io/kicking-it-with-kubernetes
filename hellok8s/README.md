@@ -91,7 +91,7 @@ spec:
         - containerPort: 8082          # This container port will be exposed
         env:                           # These key/value pairs will be available in the containers environment
         - name: PORT
-          value: 8082
+          value: "8082"
         - name: API_ANALYZER_ENDPOINT     
           value: http://analyzer-service:8080/
 
