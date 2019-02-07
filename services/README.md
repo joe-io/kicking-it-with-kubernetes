@@ -123,7 +123,7 @@ We are going to be creating the main API for our Post Enhancing service.
 
 Let's change directories to services/api.
 
-Let's create a basic service that implements the following REST API:
+We'll be creating a basic service that implements the following REST API:
 
 ```
 POST /social-post
@@ -178,13 +178,29 @@ func main() {
 }
 ```
 
-Let's run it and make sure it works (in the services/api directory, run *gin*):
-> gin
+Let's run it and make sure it works (in the services/api directory):
+> git build && ./api
 
-Go to the browser and make sure our service is working: http://localhost:3000/recognizer/identification?url=someimage.jpg
+In this case, since we are a POST, we will need to use cURL (or equivalent) to do a POST:
+```sh
+curl 
+ -H "Accept: application/json"
+ -H "Content-type: application/json" 
+ -X POST 
+ -d '{"title":"Some Post", "body":"Content", "url": "http://somewhere.com/someimage.jpg"}' 
+ http://localhost:8082/social-post
+```
 
 You should see the hard-coded response:
-> {"brand":"Apple","result":"recognized","url":"someimage.jpg"}
+```json
+{"id": "abc-123-def-456", "url": "http://somewhere.com/someimage.jpg", "keywords": ["canoe", "lake"] }
+``` 
+
+Next, we'll add some configuration logic, that will allow us to pass in the base URL for the *analyzer* service.
+
+```go
+
+```
 
 Let's go ahead and stub-out a method for ingesting images for our training model as well.
  

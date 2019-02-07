@@ -62,70 +62,9 @@ In Go you can create anonymous functions. You can assign them to variables or pa
 
 Having functions be a first-class citizen is quite powerful and useful.
 
-## Live Reload
-Up until this point we have been using either "go run" or "go build".
-
-For web development, it can be very helpful to have live reload (your service is rebuilt any time you save changes).
-
-This keeps us from having to stop the service, rebuild, and restart the service.
-
-There is a popular tool for live reloading Go programs called *gin* - to be clear, this is separate from the Gin Web Framework we are using.
-
-If you haven't already installed gin, *open a new terminal window* and run the following:
-```bash
-> cd ~
-> go get github.com/codegangsta/gin
-> gin -h
-``` 
- 
-If you don't see the help for *gin*, double check that you ran the *go get* command outside the application directory. 
- 
-Now you can run it in any directory containing Go code and it will build and watch the code for changes.
-
-But we have to do one more thing for it to work: we need to check an environment variable for the port to listen on in our service:
-
-That way *gin* can listen and proxy to our application.
-
-Let's update *main.go* to the following:
-
-```go
-package main
-
-import (
-	"github.com/gin-gonic/gin"
-	"log"
-    "os"
-)
-
-func main() {
-	r := gin.Default()
-
-	r.GET("/hello", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"hello": "world",
-		})
-	})
-
-    port := os.Getenv("PORT")
-	err := r.Run("0.0.0.0:" + port) // listen and serve
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-```
-
-Now we can simply run *gin* and it will build our app for us (and rebuild it whenever we change it).
-> gin
-
-You'll notice *gin* starts up and prints out the port it is listening on (probably 3000).
-
-Let's hit our endpoint: http://localhost:3000/hello
-
 ## Handling Query Parameters
 
-Let's try out our new live-reload powers.
- 
- Update *main.go* to look for the query parameter 'name'.
+Update *main.go* to look for the query parameter 'name'.
 
 ```go
 package main
@@ -157,16 +96,16 @@ func main() {
 }
 ```
 
-You won't need to stop or start anything.  
+Let's restart our service (Ctl+C or Cmd+C) and then:
+> go run main.go  
 
-Simply save the changes and update the url in the browser to include your name: http://localhost:3000/hello?name=Joe
+Now let's check it out:
+> http://localhost:3000/hello?name=Joe
 
 You probably noticed that we were accessing query parameters through the *Context* variable *c*.
 
 In *gin*, Context is a convenience wrapper that gives you access to the most commonly used features of a Request / Response in one place (as well as full access to the underlying standard Go Request/Response objects).
 
-Now that we have our hello-world web service working, let's start building our real services.
+You can stop the current service (Ctl+C or Cmd+C).
 
-First, let's stop *gin* from running our hello-world web service (e.g. hit CMD+C on Mac or CTL+C Windows).
-
-Now we are ready to apply what we have learned to build the actual services: [Building the Services](../services)
+Now that we have our hello-world web service working, let's start building our real services [Building the Services](../services)
