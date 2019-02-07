@@ -3,30 +3,28 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"log"
+	"net/http"
 )
 
 const (
 	defaultTrustThreshold = 0.80
 )
 
-type IdentificationResult string
-
-const (
-	Recognized   IdentificationResult = "recognized"
-	UnRecognized IdentificationResult = "unrecognized"
-)
-
-// Placeholder for calling a service that will use the image to train the analyzer for a specific brand
-func trainImage(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"message": "ingested",
-	})
+type PostRequest struct {
+	Title    string `json:"title"`
+	Body     string `json:"body"`
+	ImageUrl string `json:"imageUrl"`
 }
 
 // Identify the image the user passes in
-func identifyImage(c *gin.Context) {
-	url := c.Query("url")
-	res, err := analyzerApi.ScoreImage(url)
+func handlePost(c *gin.Context) {
+	var json PostRequest
+	if err := c.ShouldBindJSON(&json); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	res, err := analyzerApi.AnalyzeImage(json.ImageUrl)
 
 	if err != nil {
 		log.Println("Error", err)
@@ -34,14 +32,17 @@ func identifyImage(c *gin.Context) {
 		return
 	}
 
-	if res.Probability > defaultTrustThreshold {
-		c.JSON(200, gin.H{
-			"result": Recognized,
-			"brand":  res.Brand,
-		})
-	} else {
-		c.JSON(200, gin.H{
-			"result": UnRecognized,
-		})
+	keywords := []string{}
+
+	for _, lr := range res.Labels {
+		if lr.Probability >= defaultTrustThreshold {
+			keywords = append(keywords, lr.Label)
+		}
 	}
+
+	c.JSON(200, gin.H{
+		"id":       "abc-123-def-456",
+		"url":      json.ImageUrl,
+		"keywords": keywords,
+	})
 }

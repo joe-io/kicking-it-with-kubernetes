@@ -131,12 +131,12 @@ POST /social-post
 JSON:
 title : The title of a post
 body : The body fo the post
-url : The URL of an image that will be analyzed to generate extra key-words
+imageUrl : The URL of an image that will be analyzed to generate extra key-words
 
 Response: 
 {
   "id": "abc-123-def-456",
-  "url": "$url",
+  "imageUrl": "imageUrl",
   "keywords": ["keyword"],
 }
 ```
@@ -159,19 +159,15 @@ func main() {
 	r.POST("/social-post", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"id": "abc-123-def-456",
-			"url":    "http://somewhere.com/someimage.jpg",
+			"imageUrl": "http://somewhere.com/someimage.jpg",
 			"keywords": []string{			    
 			    "canoe",
 			    "lake",
 			},
 		})
 	})
-
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8082"
-	}
-	err := r.Run("0.0.0.0:" + port) // listen and serve
+	
+	err := r.Run("0.0.0.0:8082") // listen and serve
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -187,7 +183,7 @@ curl
  -H "Accept: application/json"
  -H "Content-type: application/json" 
  -X POST 
- -d '{"title":"Some Post", "body":"Content", "url": "http://somewhere.com/someimage.jpg"}' 
+ -d '{"title":"Some Post", "body":"Some Content", "imageUrl": "http://somewhere.com/someimage.jpg"}' 
  http://localhost:8082/social-post
 ```
 
@@ -199,36 +195,71 @@ You should see the hard-coded response:
 Next, we'll add some configuration logic, that will allow us to pass in the base URL for the *analyzer* service.
 
 ```go
+package main
 
-```
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/kelseyhightower/envconfig"
+	"log"
+	"net/http"
+)
 
-Let's go ahead and stub-out a method for ingesting images for our training model as well.
- 
-Add the following after the line "r := gin.Default()":
+type Config struct {
+	AnalyzerEndpoint string `envconfig:"API_ANALYZER_ENDPOINT" default:"http://localhost:8088"`
+	Port          string `envconfig:"PORT" default:"8082"`
+}
 
-```go
-	r.POST("/recognizer/training-image", func(c *gin.Context) {
+func main() {
+	config := loadConfig()
+	r := gin.Default()
+
+	r.POST("/social-post", func(c *gin.Context) {
 		c.JSON(200, gin.H{
-    		"result": "ingested",
-    	})
+			"id": "abc-123-def-456",
+			"imageUrl": "http://somewhere.com/someimage.jpg",
+			"keywords": []string{			    
+			    "canoe",
+			    "lake",
+			},
+		})
 	})
+	
+	err := r.Run("0.0.0.0:" + config.Port)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func loadConfig() *Config {
+	var config Config
+	err := envconfig.Process("api", &config)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return &config
+}
+
 ```
+
+You'll notice that we have two configuration variables we are reading in.  One for PORT and the other for ModelEndpoint.
 
 ## Refactoring Time
 
-Once again our *main* method is getting a bit messy, let's clean things up.
+Our *main* method is getting a bit messy, let's clean things up.
 
 As we have seen previously, functions in Go are first-class citizens.  
 
-Our web-handlers are currently anonymous functions passed in directly to the r.POST and r.GET methods.
+Our web-handler is currently an anonymous function passed in directly to the r.POST method.
 
-Let's move those handlers into their own file.  
+Let's move the handler into it's own file.  There is no right or wrong way to do this.
+
+When the service is small, multiple handlers can live in the same file. 
 
 Let's create a file called *handlers.go*
 
-Let's move both of our handlers into that file by copying them over and given the functions an actual name.
+Let's move our handler into that file by copying it and giving the functions an actual name.
 
-Now replace the inline functions in *main.go* with the functions you named.  No need to import anything because the functions are defined in the same package.
+Now replace the inline function in *main.go* with the function you named.  No need to import anything because the functions are defined in the same package.
 
 At this point why don't you give it a try and see if you can do it without any help!
 
@@ -239,23 +270,18 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"log"
 )
 
-// Placeholder for calling a service that will use the image to train the model for a specific brand
-func trainImage(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"message": "ingested",
-	})
-}
-
 // Identify the image the user passes in
-func identifyImage(c *gin.Context) {
-    c.JSON(200, gin.H{
-        "url":    "someimage.jpg",
-        "result": "recognized",
-        "brand":  "Apple",
-    })
+func handlePost(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"id": "abc-123-def-456",
+			"imageUrl": "http://somewhere.com/someimage.jpg",
+			"keywords": []string{			    
+			    "canoe",
+			    "lake",
+			},
+		})
 }
 ```
 
@@ -265,44 +291,42 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/kelseyhightower/envconfig"
 	"log"
-	"os"
+	"net/http"
 )
 
+type Config struct {
+	AnalyzerEndpoint string `envconfig:"API_ANALYZER_ENDPOINT" default:"http://localhost:8088"`
+	Port          string `envconfig:"PORT" default:"8082"`
+}
+
 func main() {
+	config := loadConfig()
 	r := gin.Default()
 
-	r.POST("/recognizer/trainer-image", trainImage)
-	r.GET("/recognizer/identification", identifyImage)
-
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8082"
-	}
-	err := r.Run("0.0.0.0:" + port) // listen and serve
+	r.POST("/social-post", handlePost)
+	
+	err := r.Run("0.0.0.0:" + config.Port)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
+
+func loadConfig() *Config {
+	var config Config
+	err := envconfig.Process("api", &config)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return &config
+}
 ```
-
-Great, that has cleaned things up quite a bit.
-
-Rather than implementing the brand identification logic directly in this service, we will be relying on another Microservice service to help with this.
-
-Let's look at the *analyzer* service now.
-
 
 ## Calling the Analyzer Service
 
-Now that we have two services, let's see how we go about calling the *analyzer* service from the *api* service
-
-First let's start the *analyzer* service.
-* *In a new terminal tab*, go service/analyzer
-* run the service (not with gin)
-* > go run main.go
-
-Let's double check our service is running, open this URL in your browser: http://localhost:8088/brand-score
+First let's double check the *analyzer* service is running.  If not, you can run it by going to services/analyzer:
+> go build && ./analyzer
 
 Great, now lets add a call to the *analyzer* from the *api* service.
 
@@ -310,23 +334,13 @@ We will be using a *Sling*, a Go HTTP client library specifically designed for m
 
 https://github.com/dghubble/sling
 
-We can use sling directly, but it our example, let's wrap it in a class that will make the *analyzer* client more reusable.
+We can use sling directly, but it our example, let's wrap it in a *struct* that will make the *analyzer* client more reusable.
 
-Let's create a file called analyzer.go in the services/api directory.
+You can look at analyzer.go in the services/api directory.
 
-Let's first add a *struct* and a constructor for AnalyzerApi:
+First, notice that we have added a *struct* and a constructor for AnalyzerApi:
 
 ```go
-package main
-
-import (
-	"errors"
-	"fmt"
-	"github.com/dghubble/sling"
-	"log"
-	"net/http"
-)
-
 type AnalyzerApi struct {
 	sling *sling.Sling
 }
@@ -338,13 +352,13 @@ func NewAnalyzerApi(baseUrl string, client *http.Client) *AnalyzerApi {
 }
 ```
 
-In Go, constructors are simply functions - typically named New[Type] by convention.
+In Go, *structs* don't actually have constructors.  There is however a convention to create a constructor like function named New[Type] where [Type] is the name of the struct.
 
 In this case, we use the parameters to initialize the default instance of sling for this API.
 
-Now let's add in the call to the "brand-score" endpoint:
+Now let's look at the AnalyzeImage method:
 ```go
-func (a *AnalyzerApi) ScoreImage(url string) (*GetScoreResponse, error) {
+func (a *AnalyzerApi) AnalyzeImage(url string) (*GetScoreResponse, error) {
 	req := &GetScoreRequest{Url: url}
 	scoreResponse := &GetScoreResponse{}
 
@@ -363,22 +377,27 @@ func (a *AnalyzerApi) ScoreImage(url string) (*GetScoreResponse, error) {
 }
 ```
 
+This is a method, because it takes it has a receiver.  
+
 The line that does the actual work is here:
 ```go
-a.sling.New().Get("/brand-score").QueryStruct(req).ReceiveSuccess(scoreResponse)
+a.sling.New().Get("/labels").QueryStruct(req).ReceiveSuccess(scoreResponse)
 ```
 
 The rest of the function is error handling and formatting.
 
-
-Lastly, we will define the input and response types for the call (you can add them to the end of the file):
+Lastly, we define the input and response types for the call (you will see them to the end of the file):
 ```go
-type GetScoreRequest struct {
+type AnalyzeRequest struct {
 	Url string `json:"url"`
 }
 
-type GetScoreResponse struct {
-	Brand       string  `json:"brand"`
+type AnalyzeResponse struct {
+	Labels []*LabelResult
+}
+
+type LabelResult struct {
+	Label       string  `json:"label"`
 	Probability float32 `json:"probability"`
 }
 ```
@@ -389,37 +408,37 @@ In Go, each field can be followed by a string and by convention, the string typi
 
 These are often used to define thing like how to map *struct* field names to JSON, as we see here.
 
-Lastly, we need to update *handlers.go* to use our new AnalyizerAPI client:
+## Using the Analyzer Client
+
+Let's update *handlers.go* to use our new AnalyizerAPI client:
 ```go
 package main
 
 import (
 	"github.com/gin-gonic/gin"
 	"log"
+	"net/http"
 )
 
 const (
 	defaultTrustThreshold = 0.80
 )
 
-type IdentificationResult string
-
-const (
-	Recognized   IdentificationResult = "recognized"
-	UnRecognized IdentificationResult = "unrecognized"
-)
-
-// Placeholder for calling a service that will use the image to train the analyzer for a specific brand
-func trainImage(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"message": "ingested",
-	})
+type PostRequest struct {
+	Title    string `json:"title"`
+	Body     string `json:"body"`
+	ImageUrl string `json:"imageUrl"`
 }
 
 // Identify the image the user passes in
-func identifyImage(c *gin.Context) {
-	url := c.Query("url")
-	res, err := analyzerApi.ScoreImage(url)
+func handlePost(c *gin.Context) {
+	var json PostRequest
+	if err := c.ShouldBindJSON(&json); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	res, err := analyzerApi.AnalyzeImage(json.ImageUrl)
 
 	if err != nil {
 		log.Println("Error", err)
@@ -427,20 +446,32 @@ func identifyImage(c *gin.Context) {
 		return
 	}
 
-	if res.Probability > defaultTrustThreshold {
-		c.JSON(200, gin.H{
-			"result": Recognized,
-			"brand":  res.Brand,
-		})
-	} else {
-		c.JSON(200, gin.H{
-			"result": UnRecognized,
-		})
+	keywords := []string{}
+
+	for _, lr := range res.Labels {
+		if lr.Probability >= defaultTrustThreshold {
+			keywords = append(keywords, lr.Label)
+		}
 	}
+
+	c.JSON(200, gin.H{
+		"id":       "abc-123-def-456",
+		"url":      json.ImageUrl,
+		"keywords": keywords,
+	})
 }
+
 ``` 
 
-Again, there are a few new things to go over.  We are creating a const named *defaultTrustThreshold* and then defining the Go equivalent of an Enum type.
+Again, there are a few new things to go over.  We are creating a const named *defaultTrustThreshold*.
+
+Next we declare a new *struct* called PostRequest.  We will bind this to the incoming request.
+
+After binding to the POST JSON to our struct, we make a call to the Analyzer service.
+
+Lastly we filter the results from the Analyzer service to only include higher confidence levels and transform the response to the expected shape.
+
+Lastly, let's update our *main.go* file to use to include the call to configure the analyzerApi.
 
 Your *main.go* file should look like this:
 ```go
@@ -454,20 +485,19 @@ import (
 )
 
 type Config struct {
-	ModelEndpoint string `default:"http://localhost:8088"`
-	Port          string `envconfig:"PORT" default:"8082"`
+	AnalyzerEndpoint string `default:"http://localhost:8088"`
+	Port             string `envconfig:"PORT" default:"8082"`
 }
 
 var analyzerApi *AnalyzerApi
 
 func main() {
 	config := loadConfig()
-	analyzerApi = NewAnalyzerApi(config.ModelEndpoint, &http.Client{})
+	analyzerApi = NewAnalyzerApi(config.AnalyzerEndpoint, &http.Client{})
 
 	r := gin.Default()
 
-	r.POST("/recognizer/trainer-image", trainImage)
-	r.GET("/recognizer/identification", identifyImage)
+	r.GET("/social-post", handlePost)
 
 	err := r.Run("0.0.0.0:" + config.Port)
 	if err != nil {
@@ -483,7 +513,23 @@ func loadConfig() *Config {
 	}
 	return &config
 }
-
 ```
+
+We are now ready to call our *api* service and see the whole thing work from-end-to-end.
+
+Let's stop the *api* service, if it is running (leave the *analyzer* servcie running).  Now let's restart the *api* service:
+> go build && ./api
+
+Let's see the service in action for the Dog image:
+```sh
+curl 
+ -H "Accept: application/json"
+ -H "Content-type: application/json" 
+ -X POST 
+ -d '{"title":"Some Post", "body":"Some Content", "imageUrl": "http://localhost:8088/labels?url=https://boygeniusreport.files.wordpress.com/2016/11/puppy-dog.jpg?quality=98&strip=all&w=782"}' 
+ http://localhost:8082/social-post
+```
+
+Viola, the services are talking and the ML is running!
 
 Now that we have both services built and running, let's take a look at how we can deploy them to Kubernetes: [Kubernetes FTW - Deploy and configure services with K8s](../hellok8s/README.md)

@@ -18,11 +18,11 @@ func NewAnalyzerApi(baseUrl string, client *http.Client) *AnalyzerApi {
 	}
 }
 
-func (a *AnalyzerApi) ScoreImage(url string) (*GetScoreResponse, error) {
-	req := &GetScoreRequest{Url: url}
-	scoreResponse := &GetScoreResponse{}
+func (a *AnalyzerApi) AnalyzeImage(url string) (*AnalyzeResponse, error) {
+	req := &AnalyzeRequest{Url: url}
+	scoreResponse := &AnalyzeResponse{}
 
-	res, err := a.sling.New().Get("/brand-score").QueryStruct(req).ReceiveSuccess(scoreResponse)
+	res, err := a.sling.New().Get("/labels").QueryStruct(req).ReceiveSuccess(scoreResponse)
 
 	if err != nil {
 		return nil, err
@@ -36,11 +36,15 @@ func (a *AnalyzerApi) ScoreImage(url string) (*GetScoreResponse, error) {
 	return scoreResponse, nil
 }
 
-type GetScoreRequest struct {
+type AnalyzeRequest struct {
 	Url string `json:"url"`
 }
 
-type GetScoreResponse struct {
-	Brand       string  `json:"brand"`
+type AnalyzeResponse struct {
+	Labels []*LabelResult
+}
+
+type LabelResult struct {
+	Label       string  `json:"label"`
 	Probability float32 `json:"probability"`
 }
