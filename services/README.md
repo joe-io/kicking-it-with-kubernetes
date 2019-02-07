@@ -3,7 +3,7 @@
 ## Creating the Analyzer Service
 Let's get started by creating our Analyzer Service.
 
-The *analyizer* service will implement the following REST API:
+The *analyzer* service will implement the following REST API:
  
 ```
 GET /labels
@@ -29,7 +29,7 @@ Response:
 
 You'll notice that while this is similar to the main API, the analyzer's only job is to identify the image content.
 
-The main *api* service will contain the business logic that determines what confidence level is high enough for the to count as a valid recognition.
+The main *api* service will contain the business logic that determines what confidence level is high enough for the result to count as a valid recognition.
 
 We've already created a stub for the analyzer service in services/analyzer/main.go.
 
@@ -175,7 +175,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/kelseyhightower/envconfig"
 	"log"
-	"net/http"
 )
 
 type Config struct {
@@ -384,7 +383,7 @@ These are often used to define thing like how to map *struct* field names to JSO
 
 ## Using the Analyzer Client
 
-Let's update *handlers.go* to use our new AnalyizerAPI client:
+Let's update *handlers.go* to use our new AnalyzerAPI client:
 ```go
 package main
 
@@ -489,9 +488,9 @@ func loadConfig() *Config {
 }
 ```
 
-We are now ready to call our *api* service and see the whole thing work from-end-to-end.
+We are now ready to call our *api* service and see the whole thing work from end-to-end.
 
-Let's stop the *api* service, if it is running (leave the *analyzer* servcie running).  Now let's restart the *api* service:
+Let's stop the *api* service, if it is running (leave the *analyzer* service running).  Now let's restart the *api* service:
 > go build && ./api
 
 Let's see the service in action:
@@ -504,6 +503,6 @@ curl \
  http://localhost:8082/social-post 
 ```
 
-Viola, the services are talking and the ML is running!
+Voilà, the services are talking and the ML is running!
 
 Now that we have both services built and running, let's take a look at how we can deploy them to Kubernetes: [Kubernetes FTW - Deploy and configure services with K8s](../hellok8s/README.md)
