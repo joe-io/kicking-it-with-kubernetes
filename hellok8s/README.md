@@ -92,7 +92,7 @@ spec:
         env:                           # These key/value pairs will be available in the containers environment
         - name: PORT
           value: "8082"
-        - name: API_ANALYZER_ENDPOINT     
+        - name: ANALYZER_ENDPOINT     
           value: http://analyzer-service:8080/
 
 ```
@@ -207,7 +207,16 @@ Send the above configuration to the k8s cluster in the usual way.
 kubectl apply -f ingress.yaml
 ```
 
-At this point you should be able to hit your service from your browser at `http://localhost/recognizer/identification?url=%E2%80%9Csomefakeurl.jpeg`
+At this point you should be able to hit run the previous curl command, but on port 80. 
+
+```sh
+curl \
+ -H "Accept: application/json" \
+ -H "Content-type: application/json" \
+ -X POST \
+ -d '{"title":"Some Post", "body":"Some Content", "imageUrl": "https://qvxfxxo9ak-flywheel.netdna-ssl.com/wp-content/uploads/2018/03/Jasper-canoe-tour-at-Pyramid-Lake.jpg"}' \
+ http://localhost/social-post
+ ```
 
 # Retrieving logs
 You can directly get log output from your containers to help you debug issues. The best practice for logging in a containerized environment is to log to standard out and let the orchestrator handle the logs for you. This is by default what is happening in our setup. If you run `kubectl get pods` and select the name of one of the pods and then run `kubectl logs -f <podname>` you will be able to follow the logs for the specified container. While debugging it is often convenient to decrease the number of running containers to one.
