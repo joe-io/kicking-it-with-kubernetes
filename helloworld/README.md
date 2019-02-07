@@ -10,7 +10,7 @@ In this part of the lab we will walk through the basic language features and syn
 
 Let's write our first Go program!
 
-First, create a file called main.go (in the 1-helloworld directory).
+First, create a file called main.go (in the helloworld directory).
 
 Next, add the following content: 
 
