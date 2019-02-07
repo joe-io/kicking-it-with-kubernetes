@@ -37,11 +37,11 @@ func (a *AnalyzerApi) AnalyzeImage(url string) (*AnalyzeResponse, error) {
 }
 
 type AnalyzeRequest struct {
-	Url string `json:"url"`
+	Url string `url:"url"`
 }
 
 type AnalyzeResponse struct {
-	Labels []*LabelResult
+	Labels []*LabelResult `json:"labels"`
 }
 
 type LabelResult struct {

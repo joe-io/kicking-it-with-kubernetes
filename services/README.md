@@ -179,11 +179,11 @@ Let's run it and make sure it works (in the services/api directory):
 
 In this case, since we are a POST, we will need to use cURL (or equivalent) to do a POST:
 ```sh
-curl 
- -H "Accept: application/json"
- -H "Content-type: application/json" 
- -X POST 
- -d '{"title":"Some Post", "body":"Some Content", "imageUrl": "http://somewhere.com/someimage.jpg"}' 
+curl \
+ -H "Accept: application/json" \
+ -H "Content-type: application/json" \
+ -X POST \
+ -d '{"title":"Some Post", "body":"Some Content", "imageUrl": "http://somewhere.com/someimage.jpg"}' \
  http://localhost:8082/social-post
 ```
 
@@ -362,7 +362,7 @@ func (a *AnalyzerApi) AnalyzeImage(url string) (*GetScoreResponse, error) {
 	req := &GetScoreRequest{Url: url}
 	scoreResponse := &GetScoreResponse{}
 
-	res, err := a.sling.New().Get("/brand-score").QueryStruct(req).ReceiveSuccess(scoreResponse)
+	res, err := a.sling.New().Get("/labels").QueryStruct(req).ReceiveSuccess(scoreResponse)
 
 	if err != nil {
 		return nil, err
@@ -497,7 +497,7 @@ func main() {
 
 	r := gin.Default()
 
-	r.GET("/social-post", handlePost)
+	r.POST("/social-post", handlePost)
 
 	err := r.Run("0.0.0.0:" + config.Port)
 	if err != nil {
@@ -522,12 +522,12 @@ Let's stop the *api* service, if it is running (leave the *analyzer* servcie run
 
 Let's see the service in action for the Dog image:
 ```sh
-curl 
- -H "Accept: application/json"
- -H "Content-type: application/json" 
- -X POST 
- -d '{"title":"Some Post", "body":"Some Content", "imageUrl": "https://boygeniusreport.files.wordpress.com/2016/11/puppy-dog.jpg?quality=98&strip=all&w=782"}' 
- http://localhost:8082/social-post
+curl \
+ -H "Accept: application/json" \
+ -H "Content-type: application/json" \
+ -X POST \
+ -d '{"title":"Some Post", "body":"Some Content", "imageUrl": "https://boygeniusreport.files.wordpress.com/2016/11/puppy-dog.jpg?quality=98&strip=all&w=782"}' \
+ http://localhost:8082/social-post 
 ```
 
 Viola, the services are talking and the ML is running!
