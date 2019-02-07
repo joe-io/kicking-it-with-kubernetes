@@ -152,7 +152,7 @@ func main() {
 ```
 
 Let's run it and make sure it works (in the services/api directory):
-> git build && ./api
+> go build && ./api
 
 In this case, since we are a POST, we will need to use cURL (or equivalent) to do a POST:
 ```sh
