@@ -1,4 +1,4 @@
-module github.com/joe-io/kicking-it-with-kubernetes/analyzer
+module github.com/joe-io/kicking-it-with-kubernetes/api
 
 require (
 	github.com/dghubble/sling v1.2.0
