@@ -6,6 +6,10 @@ To successfully complete this lab you should have the following installed on you
 1. Docker  (https://www.docker.com/get-started)
 2. Go version 1.11.4 (https://golang.org/doc/install)
 3. Gin Live Reload Tool (https://github.com/codegangsta/gin)
+4. Tensorflow C Libraries (https://www.tensorflow.org/install/lang_c)  
+
+Please check out the code in this lab to your local hard-drive:
+> git clone https://github.com/joe-io/kicking-it-with-kubernetes 
 
 We will work through the following mini-tutorials in this Lab.
 
@@ -13,7 +17,6 @@ We will work through the following mini-tutorials in this Lab.
 2. [Hello, Web! - REST APIs Using Golang](helloweb)
 3. [Building the Services](services)
 4. [Kubernetes FTW - Deploy and configure services with K8s](hellok8s/README.md)
-5. [Additional Resources]
 
 We will be working through the lab material together, but you can feel free to work ahead if are already familiar with a topic.
 

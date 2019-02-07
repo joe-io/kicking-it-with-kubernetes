@@ -1,24 +1,26 @@
 # Building the Services
 
-## Creating the Brand API Service
+## Creating the Post Enhancing Service
 
-We are going to be creating the main API for our Brand Discovery service.
+We are going to be creating the main API for our Post Enhancing service.
 
 Let's change directories to services/api.
 
 Let's create a basic service that implements the following REST API:
 
 ```
-GET /recognizer/identification
+POST /social-post
 
-Parameters:
-url : The URL of an image for which we want to identify the brand.
+JSON:
+title : The title of a post
+body : The body fo the post
+url : The URL of an image that will be analyzed to generate extra key-words
 
 Response: 
 {
-  "result": "recognized|unrecognized",
-  "brand": "Apple",
-  "url": "$url"
+  "id": "abc-123-def-456",
+  "url": "$url",
+  "keywords": ["keyword"],
 }
 ```
 
@@ -37,11 +39,14 @@ import (
 func main() {
 	r := gin.Default()
 
-	r.GET("/recognizer/identification", func(c *gin.Context) {
+	r.POST("/social-post", func(c *gin.Context) {
 		c.JSON(200, gin.H{
-			"url":    "someimage.jpg",
-			"result": "recognized",
-			"brand":  "Apple",
+			"id": "abc-123-def-456",
+			"url":    "http://somewhere.com/someimage.jpg",
+			"keywords": []string{			    
+			    "canoe",
+			    "lake",
+			},
 		})
 	})
 
