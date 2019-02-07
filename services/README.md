@@ -60,36 +60,10 @@ The *model.go* and *utilities.go* files contain the code that actually loads our
 
 One interesting thing to note in the code, is that we have to resize the image to match the size the original model was trained at. 
 
-If you previously installed the Tensorflow C API, you can use the following snippet for *main.go* to actually call the model code, otherwise you can leave keep the hard-coded response.
-```go
-func main() {
-	config := loadConfig()
-
-	err := loadModel()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	r := gin.Default()
-
-	r.GET("/labels", func(c *gin.Context) {
-		url := c.Query("url")
-		result, err := classifyImage(url)
-		if err != nil {
-			_ = c.AbortWithError(500, err)
-		} else {
-			c.JSON(200, result)
-		}
-	})
-
-	err = r.Run("0.0.0.0:" + config.Port) // listen and serve
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-```
+If you previously installed the Tensorflow C API, you can use run this in the services/analyzer-tf.
 
 Let's try this out.  First let's stop the currently running analyzer service (Ctl+C / Cmd+C) and run it again:
+> cd ../analyzer-tf
 > go build && ./analyzer
 
 We can check out what I service things of the following images:
