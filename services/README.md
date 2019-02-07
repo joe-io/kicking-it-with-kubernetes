@@ -65,7 +65,7 @@ If you previously installed the Tensorflow C API, you can use run this in the se
 Let's try this out.  First let's stop the currently running analyzer service (Ctl+C / Cmd+C) and run it again:
 
 ```
-cd ../analyzer-tf
+cd ../analyze-tf
 go build && ./analyzer
 ```
 
