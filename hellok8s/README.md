@@ -60,12 +60,7 @@ You will get a 500 error, but you should see a new log line reporting the error.
 
 The next exercise is to take what you learned here and create a Dockerfile for the `analyzer` service.
 
-As this part of the tutorial is focused on running services in Kubernetes, for simplicity, we are going to be running a hard-coded version of the analyzer.
-
-Change your analyzer *main.go* to the following:
-```go
-
-```  
+As this part of the tutorial is focused on running services in Kubernetes, for simplicity, we are going to be running creating the Dockerfile in the analyar directory, not the analyzer-tf directory.
 
 # Write deployment configuration
 You should now have **2 Dockerfiles** that create valid images that can be run locally. If you do not have both Docker files go back to the last exercise and create them now.
