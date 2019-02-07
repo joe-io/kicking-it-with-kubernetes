@@ -451,8 +451,7 @@ The problem is actually simple to solve.  "go run" is only meant to run a single
 Now that we have more than one file, we'll want to run "go build" and then run the built executable.
 
 Let's try that now:
-> go build
-> ./helloworld
+> go build && ./helloworld
 
 You'll notice that we didn't create any project file or have to list the files to include in our built output.
 
