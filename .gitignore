@@ -15,3 +15,5 @@
 
 services/api/api
 services/model/model
+
+.DS_Store
