@@ -63,8 +63,11 @@ One interesting thing to note in the code, is that we have to resize the image t
 If you previously installed the Tensorflow C API, you can use run this in the services/analyzer-tf.
 
 Let's try this out.  First let's stop the currently running analyzer service (Ctl+C / Cmd+C) and run it again:
-> cd ../analyzer-tf
-> go build && ./analyzer
+
+```
+cd ../analyzer-tf
+go build && ./analyzer
+```
 
 We can check out what I service things of the following images:
 
