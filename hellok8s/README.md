@@ -5,12 +5,11 @@ To maintain CI/CD principles we will use Docker to create a clean room for build
 
 In your `api` directory create a file named `Dockerfile`. In this file add the following lines.
 
-```docker
+```dockerfile
 FROM golang:1.11-alpine as build
 RUN apk add --no-cache --update alpine-sdk git gcc
 COPY . /build
 WORKDIR /build
-RUN go get github.com/dghubble/sling github.com/gin-gonic/gin github.com/kelseyhightower/envconfig
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"'
 
 FROM scratch
@@ -43,14 +42,30 @@ docker run -it -p 8082:8082 myapi:v1
 This will run a container locally on your machine. You should see output similar to the following.
 
 ```logs
-[GIN-debug] POST   /recognizer/training-image --> main.trainImage (3 handlers)
-[GIN-debug] GET    /recognizer/identification --> main.identifyImage (3 handlers)
+[GIN-debug] POST   /social-post              --> main.main.func1 (3 handlers)
 [GIN-debug] Listening and serving HTTP on 0.0.0.0:8082
 ```
 
-If you hit http://localhost:8082/recognizer/identification from a browser you will get a 500 error, but you should see a new log line reporting the error. This means that your service is up and running.
+Let's hit the service:
+```sh
+curl \
+ -H "Accept: application/json" \
+ -H "Content-type: application/json" \
+ -X POST \
+ -d '{"title":"Some Post", "body":"Some Content", "imageUrl": "https://qvxfxxo9ak-flywheel.netdna-ssl.com/wp-content/uploads/2018/03/Jasper-canoe-tour-at-Pyramid-Lake.jpg"}' \
+ http://localhost:8082/social-post 
+```
+
+You will get a 500 error, but you should see a new log line reporting the error. This means that your service is up and running.
 
 The next exercise is to take what you learned here and create a Dockerfile for the `analyzer` service.
+
+As this part of the tutorial is focused on running services in Kubernetes, for simplicity, we are going to be running a hard-coded version of the analyzer.
+
+Change your analyzer *main.go* to the following:
+```go
+
+```  
 
 # Write deployment configuration
 You should now have **2 Dockerfiles** that create valid images that can be run locally. If you do not have both Docker files go back to the last exercise and create them now.

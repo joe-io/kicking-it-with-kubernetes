@@ -520,7 +520,7 @@ We are now ready to call our *api* service and see the whole thing work from-end
 Let's stop the *api* service, if it is running (leave the *analyzer* servcie running).  Now let's restart the *api* service:
 > go build && ./api
 
-Let's see the service in action for the Dog image:
+Let's see the service in action:
 ```sh
 curl \
  -H "Accept: application/json" \
