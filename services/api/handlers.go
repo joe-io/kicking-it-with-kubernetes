@@ -42,7 +42,7 @@ func handlePost(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"id":       "abc-123-def-456",
-		"url":      json.ImageUrl,
+		"imageUrl": json.ImageUrl,
 		"keywords": keywords,
 	})
 }

@@ -189,7 +189,7 @@ curl \
 
 You should see the hard-coded response:
 ```json
-{"id": "abc-123-def-456", "url": "http://somewhere.com/someimage.jpg", "keywords": ["canoe", "lake"] }
+{"id": "abc-123-def-456", "imageUrl": "http://somewhere.com/someimage.jpg", "keywords": ["canoe", "lake"] }
 ``` 
 
 Next, we'll add some configuration logic, that will allow us to pass in the base URL for the *analyzer* service.
@@ -456,7 +456,7 @@ func handlePost(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"id":       "abc-123-def-456",
-		"url":      json.ImageUrl,
+		"imageUrl":      json.ImageUrl,
 		"keywords": keywords,
 	})
 }
