@@ -1,32 +1,38 @@
 package main
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/kelseyhightower/envconfig"
 	"log"
 )
 
 type Config struct {
-	Port string `default:"8088"`
+	Port string `envconfig:"PORT" default:"8088"`
 }
 
-// https://obrien.com/shop/life-jackets-vests/ - Life vest company
-// https://qvxfxxo9ak-flywheel.netdna-ssl.com/wp-content/uploads/2018/03/Jasper-canoe-tour-at-Pyramid-Lake.jpg
-// https://boygeniusreport.files.wordpress.com/2016/11/puppy-dog.jpg?quality=98&strip=all&w=782
-// https://www.parksmarina.com/webres/Image/obw/page-top-images/rentals-boat-slips.jpg
-
 func main() {
+	config := loadConfig()
+
 	err := loadModel()
 	if err != nil {
 		log.Fatal(err)
 	}
-	err, result := scoreImage("https://qvxfxxo9ak-flywheel.netdna-ssl.com/wp-content/uploads/2018/03/Jasper-canoe-tour-at-Pyramid-Lake.jpg")
+
+	r := gin.Default()
+
+	r.GET("/labels", func(c *gin.Context) {
+		url := c.Query("url")
+		result, err := classifyImage(url)
+		if err != nil {
+			_ = c.AbortWithError(500, err)
+		} else {
+			c.JSON(200, result)
+		}
+	})
+
+	err = r.Run("0.0.0.0:" + config.Port) // listen and serve
 	if err != nil {
 		log.Fatal(err)
-	}
-	for _, lr := range result.Labels {
-		fmt.Printf("label: %s, prop: %f\n", lr.Label, lr.Probability)
 	}
 }
 
@@ -35,10 +41,18 @@ func _main() {
 
 	r := gin.Default()
 
-	r.GET("/brand-score", func(c *gin.Context) {
+	r.GET("/labels", func(c *gin.Context) {
 		c.JSON(200, gin.H{
-			"brand":       "Apple",
-			"probability": 0.925,
+			"labels": []*LabelResult{
+				{
+					Label:       "canoe",
+					Probability: 0.3231,
+				},
+				{
+					Label:       "lake",
+					Probability: 0.2412,
+				},
+			},
 		})
 	})
 

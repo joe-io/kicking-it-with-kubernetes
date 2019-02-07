@@ -14,8 +14,8 @@ import (
 )
 
 type ClassifyResult struct {
-	Filename string        `json:"filename"`
-	Labels   []LabelResult `json:"labels"`
+	Url    string        `json:"url"`
+	Labels []LabelResult `json:"labels"`
 }
 
 type LabelResult struct {
@@ -29,11 +29,11 @@ var (
 	labels       []string
 )
 
-func scoreImage(url string) (error, *ClassifyResult) {
+func classifyImage(url string) (*ClassifyResult, error) {
 	// Fetch the image at the URL
 	resp, err := http.Get(url)
 	if err != nil {
-		return errors.New("Could not download the image."), nil
+		return nil, errors.New("Could not download the image.")
 	}
 	// Ensure that we close the body, when this function exits
 	defer resp.Body.Close()
@@ -45,7 +45,7 @@ func scoreImage(url string) (error, *ClassifyResult) {
 	// Make tensor
 	tensor, err := makeTensorFromImage(&imageBuffer, url)
 	if err != nil {
-		return errors.New("Invalid image"), nil
+		return nil, errors.New("Invalid image")
 	}
 
 	// Run inference
@@ -58,14 +58,14 @@ func scoreImage(url string) (error, *ClassifyResult) {
 		},
 		nil)
 	if err != nil {
-		return errors.New("Could not run inference"), nil
+		return nil, errors.New("Could not run inference")
 	}
 
 	// Return best labels
-	return nil, &ClassifyResult{
-		Filename: url,
-		Labels:   findBestLabels(output[0].Value().([][]float32)[0]),
-	}
+	return &ClassifyResult{
+		Url:    url,
+		Labels: findBestLabels(output[0].Value().([][]float32)[0]),
+	}, nil
 }
 
 func loadModel() error {

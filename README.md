@@ -5,8 +5,7 @@ In this lab we will be building multiple Microservices using Golang and deploy t
 To successfully complete this lab you should have the following installed on your machine:
 1. Docker  (https://www.docker.com/get-started)
 2. Go version 1.11.4 (https://golang.org/doc/install)
-3. Gin Live Reload Tool (https://github.com/codegangsta/gin)
-4. Tensorflow C Libraries (https://www.tensorflow.org/install/lang_c)  
+3. Tensorflow C Libraries (https://www.tensorflow.org/install/lang_c)  
 
 Please check out the code in this lab to your local hard-drive:
 > git clone https://github.com/joe-io/kicking-it-with-kubernetes 

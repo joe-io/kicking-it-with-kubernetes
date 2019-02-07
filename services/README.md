@@ -1,5 +1,122 @@
 # Building the Services
 
+## Creating the Analyzer Service
+Let's get started by creating our Analyzer Service.
+
+The *analyizer* service will implement the following REST API:
+ 
+```
+GET /labels
+
+Parameters:
+url : The URL of an image for which we want to run the model to label the content
+
+Response: 
+{
+  "url": "$url",
+  "labels": [
+    {
+        "label": "canoe",
+        "probabilty: 0.3231,
+    },
+    {
+        "label": "lake",
+        "probabilty: 0.2412,
+    },
+  ]
+}
+```
+
+You'll notice that while this is similar to the main API, the analyzer's only job is to identify the image content.
+
+The main *api* service will contain the business logic that determines what confidence level is high enough for the to count as a valid recognition.
+
+We've already created a stub for the analyzer service in services/analyzer/main.go.
+
+Feel free to look it over. It is pretty much what you have seen already.
+
+One thing that you might notice that is different is the bit about configuration.
+
+We are using a Go library that makes it very easy to bind a *struct* to the current environment variables (https://github.com/kelseyhightower/envconfig).
+
+We'll be using this configuration library in both services.  It is a great way to specify default values for a service as well.
+
+Let's go ahead and run the *analyzer* service that returns the hard-coded response.  Make sure you are in the services/analyzer directory:
+> go build && ./analyzer
+
+Now let's hit the endpoint in the browser: 
+> http://localhost:8088/labels?url=http://somewhere.com/someimage.jpg
+
+## Making it Smart
+Our next step involves using an ML model in Go.
+
+We don't have time to go into a lot of detail here, but there is a Go Tensorflow Library that can load saved Tensorflow models and evaluate them.
+
+https://www.tensorflow.org/install/lang_go
+
+Additionally, we are using a pre-trained model that is in the ./model directory.
+
+The *model.go* and *utilities.go* files contain the code that actually loads our trained model, as well as code that downloads an image and evaluates the model against the image.
+
+One interesting thing to note in the code, is that we have to resize the image to match the size the original model was trained at. 
+
+If you previously installed the Tensorflow C API, you can use the following snippet for *main.go* to actually call the model code, otherwise you can leave keep the hard-coded response.
+```go
+func main() {
+	config := loadConfig()
+
+	err := loadModel()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	r := gin.Default()
+
+	r.GET("/labels", func(c *gin.Context) {
+		url := c.Query("url")
+		result, err := classifyImage(url)
+		if err != nil {
+			_ = c.AbortWithError(500, err)
+		} else {
+			c.JSON(200, result)
+		}
+	})
+
+	err = r.Run("0.0.0.0:" + config.Port) // listen and serve
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+```
+
+Let's try this out.  First let's stop the currently running analyzer service (Ctl+C / Cmd+C) and run it again:
+> go build && ./analyzer
+
+We can check out what I service things of the following images:
+
+### Canoe 
+![O'Brien Canoe Image](https://qvxfxxo9ak-flywheel.netdna-ssl.com/wp-content/uploads/2018/03/Jasper-canoe-tour-at-Pyramid-Lake.jpg)
+
+> http://localhost:8088/labels?url=https://qvxfxxo9ak-flywheel.netdna-ssl.com/wp-content/uploads/2018/03/Jasper-canoe-tour-at-Pyramid-Lake.jpg
+
+### Motor Boat
+![Speed Boat](https://www.parksmarina.com/webres/Image/obw/page-top-images/rentals-boat-slips.jpg)
+
+> http://localhost:8088/labels?url=https://www.parksmarina.com/webres/Image/obw/page-top-images/rentals-boat-slips.jpg
+
+### Dog
+![Dog](https://boygeniusreport.files.wordpress.com/2016/11/puppy-dog.jpg?quality=98&strip=all&w=782)
+
+> http://localhost:8088/labels?url=https://boygeniusreport.files.wordpress.com/2016/11/puppy-dog.jpg?quality=98&strip=all&w=782
+
+Pretty cool, right?
+
+Feel free to grab any image you want from the internet and try it out as well.
+
+In reality our model is quite limited, but enough to let you get a feel for how this works.  In practice your data-science team would likely create and update the models for you.
+
+The great part about Tensorflow is that they can create models in Python and export them in a way that you can use them in Go (or almost any other language).
+
 ## Creating the Post Enhancing Service
 
 We are going to be creating the main API for our Post Enhancing service.
@@ -159,33 +276,6 @@ Rather than implementing the brand identification logic directly in this service
 
 Let's look at the *analyzer* service now.
 
-## Creating the Analyzer Service
-The *analyizer* service will implement the following REST API:
- 
-```
-GET /brand-score
-
-Parameters:
-url : The URL of an image for which we want to look for a brand.
-
-Response: 
-{
-  "brand": "Apple",
-  "probabilty": 0.7
-}
-```
-
-You'll notice that while this is similar to the main API, the analyzer's job is try and identify a brand and to provide a confidence (probability) score for its identification.
-
-The main *api* service will contain the business logic that determines what confidence level is high enough for the to count as a valid recognition.
-
-We've already created a stub for the analyzer service in services/analyzer/main.go.
-
-Feel free to look it over. It is pretty much what you have seen already.
-
-One thing that you might notice that is different is the bit about configuration.
-
-We'll cover that in moment.
 
 ## Calling the Analyzer Service
 
