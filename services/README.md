@@ -526,7 +526,7 @@ curl
  -H "Accept: application/json"
  -H "Content-type: application/json" 
  -X POST 
- -d '{"title":"Some Post", "body":"Some Content", "imageUrl": "http://localhost:8088/labels?url=https://boygeniusreport.files.wordpress.com/2016/11/puppy-dog.jpg?quality=98&strip=all&w=782"}' 
+ -d '{"title":"Some Post", "body":"Some Content", "imageUrl": "https://boygeniusreport.files.wordpress.com/2016/11/puppy-dog.jpg?quality=98&strip=all&w=782"}' 
  http://localhost:8082/social-post
 ```
 
