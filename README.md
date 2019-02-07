@@ -24,3 +24,4 @@ If you get stuck, a finished version of each lab step is provided for your refer
 
 <b>Let's get to it!</b>
 
+Additional Resources: [Resources](./resources.md)
