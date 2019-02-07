@@ -302,7 +302,7 @@ func loadConfig() *Config {
 
 ## Calling the Analyzer Service
 
-First let's double check the *analyzer* service is running.  If not, you can run it by going to services/analyzer:
+First let's double check the *analyze-tf* service is running.  If not, you can run it by going to services/analyze-tf:
 > go build && ./analyzer
 
 Great, now lets add a call to the *analyzer* from the *api* service.
