@@ -459,7 +459,7 @@ import (
 )
 
 type Config struct {
-	AnalyzerEndpoint string `default:"http://localhost:8088"`
+	AnalyzerEndpoint string `envconfig:"ANALYZER_ENDPOINT" default:"http://localhost:8088"`
 	Port             string `envconfig:"PORT" default:"8082"`
 }
 
