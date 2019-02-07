@@ -88,8 +88,7 @@ func main() {
 		})
 	})
 
-	port := os.Getenv("PORT")
-	err := r.Run("0.0.0.0:" + port) // listen and serve
+	err := r.Run("0.0.0.0:8282") // listen and serve
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -100,7 +99,7 @@ Let's restart our service (Ctl+C or Cmd+C) and then:
 > go run main.go  
 
 Now let's check it out:
-> http://localhost:3000/hello?name=Joe
+> http://localhost:8282/hello?name=Joe
 
 You probably noticed that we were accessing query parameters through the *Context* variable *c*.
 
