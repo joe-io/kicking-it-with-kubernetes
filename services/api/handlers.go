@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	defaultTrustThreshold = 0.80
+	defaultTrustThreshold = 0.24
 )
 
 type PostRequest struct {
