@@ -8,3 +8,5 @@
   * https://github.com/swagger-api/swagger-codegen
 * Go works really well with gRPC
  * https://grpc.io/docs/quickstart/go.html
+* Kubernetes Documentation
+ * https://kubernetes.io/docs/home/
